@@ -39,7 +39,7 @@ console.log(popper("Akshay", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 //2
 
 const popper1 = (...args) => {
-  return args;
+  return args; //will give a list of arrays
 };
 
 console.log(popper1(12, 353, 463, 633));
