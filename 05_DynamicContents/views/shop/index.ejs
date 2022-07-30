@@ -1,9 +1,9 @@
-<%- include('partials/head.ejs') %>
+<%- include('../partials/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
     </head>
 
     <body>
-        <%- include('partials/navbar.ejs') %>
+        <%- include('../partials/navbar.ejs') %>
             <main>
                 <% if (prods.length> 0) { %>
                     <div class="grid">
@@ -35,4 +35,4 @@
                         <h1>No products found</h1>
                         <% } %>
             </main>
-            <%- include('partials/footer.ejs') %>
+            <%- include('../partials/footer.ejs') %>
