@@ -1,6 +1,7 @@
 // const products = [];
 const fs = require("fs");
 const path = require("path");
+
 const p = path.join(
   path.dirname(require.main.filename),
   "data",
@@ -18,9 +19,13 @@ const getProductsFromFile = (cb) => {
 };
 
 module.exports = class Product {
-  constructor(t) {
-    this.title = t;
+  constructor(title, imageUrl, description, price) {
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.price = price;
   }
+
   save() {
     getProductsFromFile((products) => {
       products.push(this);
