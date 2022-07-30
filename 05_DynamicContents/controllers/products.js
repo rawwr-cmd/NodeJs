@@ -19,6 +19,7 @@ exports.getProducts = (req, res, next) => {
   //   console.log("shop.js", adminData.products);
   //   res.sendFile(path.join(rootDir, "views", "shop.html"));
   //   const products = adminData.products;
-  const products = Product.fetchAll();
-  res.render("shop", { prods: products, pageTitle: "Shop", path: "/" });
+  const products = Product.fetchAll((products) => {
+    res.render("shop", { prods: products, pageTitle: "Shop", path: "/" });
+  });
 };
