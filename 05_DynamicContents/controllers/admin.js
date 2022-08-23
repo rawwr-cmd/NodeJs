@@ -4,7 +4,7 @@ exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
-    editing: "false",
+    editing: false,
   });
 };
 
@@ -58,4 +58,10 @@ exports.getProducts = (req, res, next) => {
       path: "/admin/products",
     });
   });
+};
+
+exports.postDeleteProduct = (req, res, next) => {
+  const { productId } = req.body;
+  Product.deleteById(productId);
+  res.redirect("/admin/products");
 };
