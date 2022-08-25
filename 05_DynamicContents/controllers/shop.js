@@ -18,7 +18,7 @@ exports.getProductDetail = (req, res, next) => {
   // console.log(productId);
   Product.findById(productId)
     .then(([product]) => {
-      // console.log(product[0]);
+      console.log(product[0]);
       res.render("shop/product-details", {
         product: product[0],
         pageTitle: product.title,
