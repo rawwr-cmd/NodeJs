@@ -2,36 +2,38 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
-  //   console.log("shop.js", adminData.products);
-  //   res.sendFile(path.join(rootDir, "views", "shop.html"));
-  //   const products = adminData.products;
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      pageTitle: "All Products",
-      path: "/products",
-    });
-  });
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prods: rows,
+        pageTitle: "All Products",
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getProductDetail = (req, res, next) => {
   const { productId } = req.params;
   // console.log(productId);
-  Product.findById(productId, (product) => {
-    // console.log(product);
-    res.render("shop/product-details", {
-      product: product,
-      pageTitle: product.title,
-      path: "/products",
-    });
-  });
+  Product.findById(productId)
+    .then(([product]) => {
+      // console.log(product[0]);
+      res.render("shop/product-details", {
+        product: product[0],
+        pageTitle: product.title,
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
+  // console.log(product);
 };
 
 exports.getIndex = (req, res, next) => {
   Product.fetchAll()
     //these two variables holding the two nested arrays
     .then(([rows, fieldData]) => {
-      console.log(rows);
+      // console.log(rows);
       res.render("shop/index", {
         prods: rows,
         pageTitle: "Shop",
