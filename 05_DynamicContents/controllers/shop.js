@@ -15,18 +15,24 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProductDetail = (req, res, next) => {
   const { productId } = req.params;
-  // console.log(productId);
-  Product.findById(productId)
-    .then(([product]) => {
-      console.log(product[0]);
+  Product.findAll({ where: { id: productId } })
+    .then((products) => {
+      // console.log(products);
       res.render("shop/product-details", {
-        product: product[0],
-        pageTitle: product.title,
+        product: products[0],
+        pageTitle: products[0].title,
         path: "/products",
       });
     })
     .catch((err) => console.log(err));
-  // console.log(product);
+
+  // Product.findByPk(productId).then((product) => {
+  //   res.render("shop/product-details", {
+  //     product: product,
+  //     pageTitle: product.title,
+  //     path: "/products",
+  //   });
+  // });
 };
 
 exports.getIndex = (req, res, next) => {
