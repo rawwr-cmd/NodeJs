@@ -11,6 +11,7 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   // console.log(req.body);
   const { title, imageUrl, price, description } = req.body;
+
   Product.create({ title, imageUrl, price, description })
     .then((result) => {
       // console.log(result);
@@ -50,6 +51,7 @@ exports.postEditProduct = (req, res, next) => {
       product.imageUrl = imageUrl;
       product.price = price;
       product.description = description;
+      userId: req.user.id;
       return product.save();
     })
     //handle the success of product.save
