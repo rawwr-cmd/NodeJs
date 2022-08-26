@@ -3,6 +3,7 @@
 // const products = [];
 const { v4: uuid } = require("uuid");
 const Sequelize = require("sequelize");
+
 const sequelize = require("../util/database");
 
 const Product = sequelize.define("product", {
@@ -19,11 +20,11 @@ const Product = sequelize.define("product", {
   },
   imageUrl: {
     type: Sequelize.STRING,
-    allowNUll: false,
+    allowNull: false,
   },
   description: {
     type: Sequelize.STRING,
-    allowNUll: false,
+    allowNull: false,
   },
 });
 
