@@ -14,7 +14,8 @@ exports.postAddProduct = (req, res, next) => {
   Product.create({ title, imageUrl, price, description })
     .then((result) => {
       // console.log(result);
-      console.log("table created");
+      console.log("PRODUCT CREATED");
+      res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
 };
@@ -26,7 +27,8 @@ exports.getEditProduct = (req, res, next) => {
   }
   //req params actually grabs the id from the url
   const { productId } = req.params;
-  Product.findById(productId, (product) => {
+  Product.findAll({ where: { id: productId } }).then((products) => {
+    const product = products[0];
     if (!product) {
       return res.redirect("/");
     }
@@ -41,30 +43,47 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
   const { productId, title, imageUrl, price, description } = req.body;
-  // console.log(productId, title, imageUrl, price, description);
-  const updatedProduct = new Product(
-    productId,
-    title,
-    imageUrl,
-    description,
-    price
-  );
-  updatedProduct.save();
-  res.redirect("/admin/products");
+  Product.findAll({ where: { id: productId } })
+    .then((products) => {
+      const product = products[0];
+      product.title = title;
+      product.imageUrl = imageUrl;
+      product.price = price;
+      product.description = description;
+      return product.save();
+    })
+    //handle the success of product.save
+    .then((result) => {
+      console.log("UPDATED PRODUCT!");
+      res.redirect("/admin/products");
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("admin/products", {
-      prods: products,
-      pageTitle: "Admin Products",
-      path: "/admin/products",
-    });
-  });
+  Product.findAll()
+    //these two variables holding the two nested arrays
+    .then((products) => {
+      res.render("admin/products", {
+        prods: products,
+        pageTitle: "Admin Products",
+        path: "/admin/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.deleteById(productId);
-  res.redirect("/admin/products");
+  Product.findAll({ where: { id: productId } })
+    .then((products) => {
+      const product = products[0];
+      return product.destroy();
+    })
+    //if destruction is successful
+    .then((result) => {
+      console.log("SUCCESSFULLY DELETED!!");
+      res.redirect("/admin/products");
+    })
+    .catch((err) => console.log(err));
 };
