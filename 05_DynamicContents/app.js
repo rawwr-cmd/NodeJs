@@ -6,6 +6,8 @@ const path = require("path");
 const sequelize = require("./util/database");
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const cartItem = require("./models/cart-item");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -45,10 +47,14 @@ cascade means if u delete User, the products created by the user gets deleted to
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 //one user can add more than one products
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: cartItem });
+Product.belongsToMany(Cart, { through: cartItem });
 
 sequelize
-  // .sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  // .sync()
   .then((result) => {
     return User.findByPk(1);
     // console.log(result);
