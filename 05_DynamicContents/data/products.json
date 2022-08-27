@@ -6,7 +6,7 @@
         "description": "this is a cool picture to buy",
         "price": "76"
     },
-    {
+    { 
         "id": "e8c9ae84-4e3f-4986-880a-3d54e4c89a82",
         "title": "book play",
         "imageUrl": "https://images.pexels.com/photos/3358707/pexels-photo-3358707.png?auto=compress&cs=tinysrgb&w=600",
