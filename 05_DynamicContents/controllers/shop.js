@@ -109,9 +109,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
+  let fetchedCart;
   req.user
     .getCart()
     .then((cart) => {
+      fetchedCart = cart;
       return cart.getProducts();
     })
     .then((products) => {
@@ -123,10 +125,12 @@ exports.postOrder = (req, res, next) => {
           return order.addProducts(
             products.map((product) => {
               product.orderItem = { quantity: product.cartItem.quantity };
-
               return product;
             })
           );
+        })
+        .then((result) => {
+          return fetchedCart.setProducts(null);
         })
         .then((result) => {
           res.redirect("/orders");
@@ -137,15 +141,16 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render("shop/orders", {
-    path: "/orders",
-    pageTitle: "Your Orders",
-  });
-};
-
-exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    path: "/checkout",
-    pageTitle: "Your Checkout",
-  });
+  req.user
+    //each orders will have products arrays
+    .getOrders({ include: ["products"] })
+    .then((orders) => {
+      // console.log(orders);
+      res.render("shop/orders", {
+        path: "/orders",
+        pageTitle: "Your Orders",
+        orders: orders,
+      });
+    })
+    .catch((err) => console.log(err));
 };
