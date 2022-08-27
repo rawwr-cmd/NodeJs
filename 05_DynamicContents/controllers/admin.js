@@ -29,7 +29,7 @@ exports.getEditProduct = (req, res, next) => {
   }
   //req params actually grabs the id from the url
   const { productId } = req.params;
-  Product.findAll({ where: { id: productId } }).then((products) => {
+  req.user.getProducts({ where: { id: productId } }).then((products) => {
     const product = products[0];
     if (!product) {
       return res.redirect("/");
@@ -63,7 +63,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  req.user
+    .getProducts()
     //these two variables holding the two nested arrays
     .then((products) => {
       res.render("admin/products", {
