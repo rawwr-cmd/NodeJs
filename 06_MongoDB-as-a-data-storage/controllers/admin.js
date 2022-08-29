@@ -21,26 +21,26 @@ exports.postAddProduct = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-exports.getEditProduct = (req, res, next) => {
-  const editMode = req.query.edit;
-  if (!editMode) {
-    return res.redirect("/");
-  }
-  //req params actually grabs the id from the url
-  const { productId } = req.params;
-  req.user.getProducts({ where: { id: productId } }).then((products) => {
-    const product = products[0];
-    if (!product) {
-      return res.redirect("/");
-    }
-    res.render("admin/edit-product", {
-      pageTitle: "Edit Product",
-      path: "/admin/edit-product",
-      editing: editMode,
-      product: product,
-    });
-  });
-};
+// exports.getEditProduct = (req, res, next) => {
+//   const editMode = req.query.edit;
+//   if (!editMode) {
+//     return res.redirect("/");
+//   }
+//   //req params actually grabs the id from the url
+//   const { productId } = req.params;
+//   req.user.getProducts({ where: { id: productId } }).then((products) => {
+//     const product = products[0];
+//     if (!product) {
+//       return res.redirect("/");
+//     }
+//     res.render("admin/edit-product", {
+//       pageTitle: "Edit Product",
+//       path: "/admin/edit-product",
+//       editing: editMode,
+//       product: product,
+//     });
+//   });
+// };
 
 exports.postEditProduct = (req, res, next) => {
   const { productId, title, imageUrl, price, description } = req.body;
