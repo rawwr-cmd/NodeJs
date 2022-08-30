@@ -28,9 +28,7 @@ exports.getProductDetail = (req, res, next) => {
 
 exports.getIndex = (req, res, next) => {
   Product.fetchAll()
-    //these two variables holding the two nested arrays
     .then((products) => {
-      // console.log(rows);
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
@@ -54,32 +52,21 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  const { productId } = req.body;
-  Product.findById(productId)
+  const prodId = req.body.productId;
+  Product.findById(prodId)
     .then((product) => {
-      // console.log(product);
       return req.user.addToCart(product);
     })
     .then((result) => {
       console.log(result);
-<<<<<<< HEAD
-      // res.redirect("/cart");
-=======
->>>>>>> parent of 7d4a75d (fixing a bug)
+      res.redirect("/cart");
     });
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
   req.user
-    .getCart()
-    .then((cart) => {
-      return cart.getProducts({ where: { id: productId } });
-    })
-    .then((products) => {
-      const product = products[0];
-      return product.cartItem.destroy();
-    })
+    .deleteItemFromCart(productId)
     .then((result) => {
       res.redirect("/cart");
     })
