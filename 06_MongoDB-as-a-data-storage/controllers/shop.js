@@ -84,8 +84,7 @@ exports.postOrder = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   req.user
-    //each orders will have products arrays
-    .getOrders({ include: ["products"] })
+    .getOrders()
     .then((orders) => {
       // console.log(orders);
       res.render("shop/orders", {
