@@ -62,7 +62,10 @@ exports.postCart = (req, res, next) => {
     })
     .then((result) => {
       console.log(result);
+<<<<<<< HEAD
       // res.redirect("/cart");
+=======
+>>>>>>> parent of 7d4a75d (fixing a bug)
     });
 };
 
