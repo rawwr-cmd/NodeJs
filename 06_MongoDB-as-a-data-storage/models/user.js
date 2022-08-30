@@ -95,6 +95,22 @@ class User {
       );
   }
 
+  addOrder() {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .insertOne(this.cart)
+      .then((result) => {
+        //emptying the cart after ordering
+        this.cart = { items: [] };
+        //emptying the cart from the database
+        return db.collection("users").updateOne(
+          { _id: new ObjectId(this._id) }, //searching for the user
+          { $set: { cart: { items: [] } } }
+        );
+      });
+  }
+
   static findById(userId) {
     const db = getDb();
     return db

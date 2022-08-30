@@ -21,7 +21,7 @@ router.get("/products/:productId", getProductDetail);
 router.get("/cart", getCart);
 router.post("/cart", postCart);
 router.post("/cart-delete-item", postCartDeleteProduct);
-// router.post("/create-order", postOrder);
+router.post("/create-order", postOrder);
 // router.get("/orders", getOrders);
 
 module.exports = router;
