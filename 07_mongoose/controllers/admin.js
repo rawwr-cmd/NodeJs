@@ -70,7 +70,12 @@ exports.postEditProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
   Product.find()
     //these two variables holding the two nested arrays
+    //selecting only specific data
+    // .select("title price -_id")
+    //populating the collections
+    // .populate("userId", "name")
     .then((products) => {
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
