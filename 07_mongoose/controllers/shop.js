@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Order = require("../models/orders");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -69,7 +70,7 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
   req.user
-    .deleteItemFromCart(productId)
+    .removeFromCart(productId)
     .then((result) => {
       res.redirect("/cart");
     })
@@ -78,7 +79,29 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {
   req.user
-    .addOrder()
+    .populate("cart.items.productId")
+    .then((user) => {
+      // console.log(user.cart.items);
+
+      /* using the spread operator 
+       not directly on the product ID but on a special field
+       mongoose gives me, _doc.
+      with .doc we get really access to just the data that's in there
+      we pull out all the data in that document we retrieved and store
+      it in a new object which we save here as a product */
+
+      const products = user.cart.items.map((i) => {
+        return { quantity: i.quantity, product: { ...i.productId._doc } };
+      });
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          userId: req.user,
+        },
+        products: products,
+      });
+      return order.save();
+    })
     .then((result) => {
       res.redirect("/orders");
     })
