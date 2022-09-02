@@ -44,17 +44,16 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
   const { productId, title, imageUrl, price, description } = req.body;
-  const product = new Product(
-    title,
-    price,
-    description,
-    imageUrl,
-    // new ObjectId(productId),
-    productId
-  );
-  //handle the success of product.save
-  product
-    .save()
+  Product.findById(productId)
+    //destructuring the arrays
+    .then((product) => {
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product.imageUrl = imageUrl;
+      return product.save();
+    })
+    //handle the success of product.save
     .then((result) => {
       console.log("UPDATED PRODUCT!");
       res.redirect("/admin/products");
@@ -63,7 +62,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     //these two variables holding the two nested arrays
     .then((products) => {
       res.render("admin/products", {
@@ -77,7 +76,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.deleteById(productId)
+  Product.findByIdAndRemove(productId)
     .then(() => {
       console.log("SUCCESSFULLY DELETED!!");
       res.redirect("/admin/products");
