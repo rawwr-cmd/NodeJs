@@ -40,8 +40,11 @@ exports.getIndex = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   req.user
-    .getCart()
-    .then((products) => {
+    .populate("cart.items.productId")
+    .then((user) => {
+      // console.log(user);
+      const products = user.cart.items;
+      // console.log(products);
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -52,8 +55,8 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  const prodId = req.body.productId;
-  Product.findById(prodId)
+  const { productId } = req.body;
+  Product.findById(productId)
     .then((product) => {
       return req.user.addToCart(product);
     })

@@ -25,6 +25,35 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.methods.addToCart = function (product) {
+  const cartProductIndex = this.cart.items.findIndex((cp) => {
+    return cp.productId.toString() === product._id.toString();
+  });
+  console.log(cartProductIndex);
+  let newQuantity = 1;
+
+  const updatedCartItems = [...this.cart.items];
+  //updating if the product is already in the cart
+  if (cartProductIndex >= 0) {
+    newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+    updatedCartItems[cartProductIndex].quantity = newQuantity;
+  }
+  //adding new product to cart
+  else {
+    updatedCartItems.push({
+      productId: product._id,
+      quantity: newQuantity,
+    });
+  }
+
+  const updatedCart = {
+    items: updatedCartItems,
+  };
+
+  this.cart = updatedCart;
+  return this.save();
+};
+
 module.exports = mongoose.model("User", userSchema);
 
 // const { ObjectId } = require("mongodb");
@@ -38,42 +67,6 @@ module.exports = mongoose.model("User", userSchema);
 //   }
 
 //   save() {
-//     const db = getDb();
-//     return db.collection("users").insertOne(this);
-//   }
-
-//   addToCart(product) {
-//     const cartProductIndex = this.cart.items.findIndex((cp) => {
-//       return cp.productId.toString() === product._id.toString();
-//     });
-//     console.log(cartProductIndex);
-//     let newQuantity = 1;
-
-//     const updatedCartItems = [...this.cart.items];
-//     //updating if the product is already in the cart
-//     if (cartProductIndex >= 0) {
-//       newQuantity = this.cart.items[cartProductIndex].quantity + 1;
-//       updatedCartItems[cartProductIndex].quantity = newQuantity;
-//     }
-//     //adding new product to cart
-//     else {
-//       updatedCartItems.push({
-//         productId: new ObjectId(product._id),
-//         quantity: newQuantity,
-//       });
-//     }
-
-//     const updatedCart = {
-//       items: updatedCartItems,
-//     };
-
-//     const db = getDb();
-//     return db
-//       .collection("users")
-//       .updateOne(
-//         { _id: new ObjectId(this._id) },
-//         { $set: { cart: updatedCart } }
-//       );
 
 //     // firsttime
 //     // const updatedCart = {
