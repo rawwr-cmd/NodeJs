@@ -47,7 +47,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(session(sessionConfig));
 
 app.use((req, res, next) => {
-  User.findById("6311c656b7aeedb3de7112cb")
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
       next();

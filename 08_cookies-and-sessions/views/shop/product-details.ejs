@@ -17,6 +17,8 @@
                 <p>
                     <%= product.description %>
                 </p>
-                <%- include('../partials/add-to-cart.ejs', {product : product}) %>
+                <% if (isAuthenticated) { %>
+                    <%- include('../partials/add-to-cart.ejs', {product : product}) %>
+                        <% } %>
             </main>
             <%- include('../partials/footer.ejs') %>
