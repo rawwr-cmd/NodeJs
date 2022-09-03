@@ -5,7 +5,6 @@
     <body>
         <%- include('../partials/navbar.ejs') %>
             <main>
-
                 <% if (prods.length> 0) { %>
                     <div class="grid">
                         <% for (let product of prods) { %>
@@ -29,7 +28,9 @@
                                 <div class="card__actions">
                                     <a href="/products/<%= product._id %>" class="btn">Details</a>
 
-                                    <%- include('../partials/add-to-cart.ejs', {product : product}) %>
+                                    <% if (isAuthenticated) { %>
+                                        <%- include('../partials/add-to-cart.ejs', {product : product}) %>
+                                            <% } %>
                                 </div>
                             </article>
                             <% } %>
