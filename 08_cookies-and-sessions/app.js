@@ -8,11 +8,16 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
+const mongoDbStore = require("connect-mongodb-session")(session);
 
 const { get404 } = require("./controllers/error");
 const User = require("./models/user");
 
 const app = express();
+const store = new mongoDbStore({
+  uri: process.env.DB_URL,
+  collection: "sessions",
+});
 
 app.set("view engine", "ejs");
 // app.set("view engine", "pug");
@@ -24,6 +29,7 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
 const sessionConfig = {
+  store: store,
   secret: "my secret",
   resave: false,
   saveUninitialized: false,
