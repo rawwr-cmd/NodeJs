@@ -7,17 +7,25 @@
     <body>
         <%- include('../partials/navbar.ejs') %>
             <main>
-                <form class="login-form" action="/login" method="POST">
-                    <div class="form-control">
-                        <label for="email">E-mail</label>
-                        <input type="email" name="email" id="email">
+                <% if (errorMessage) { %>
+                    <div class="error-message">
+                        <p>
+                            <%= errorMessage %>
+                        </p>
                     </div>
-                    <div class="form-control">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" autocomplete="on">
-                    </div>
-                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                    <button class="btn" type="submit">Login</button>
-                </form>
+                    <% } %>
+
+                        <form class="login-form" action="/login" method="POST">
+                            <div class="form-control">
+                                <label for="email">E-mail</label>
+                                <input type="email" name="email" id="email">
+                            </div>
+                            <div class="form-control">
+                                <label for="password">Password</label>
+                                <input type="password" name="password" id="password" autocomplete="on">
+                            </div>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn" type="submit">Login</button>
+                        </form>
             </main>
             <%- include('../partials/footer.ejs') %>
