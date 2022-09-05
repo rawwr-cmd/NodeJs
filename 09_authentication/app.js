@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const mongoDbStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const { get404 } = require("./controllers/error");
 const User = require("./models/user");
@@ -18,6 +19,8 @@ const store = new mongoDbStore({
   uri: process.env.DB_URL,
   collection: "sessions",
 });
+
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 // app.set("view engine", "pug");
@@ -45,6 +48,7 @@ const sessionConfig = {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(session(sessionConfig));
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -56,6 +60,13 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => console.log(err));
+});
+
+//middleware
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);
