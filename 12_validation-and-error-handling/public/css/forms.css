@@ -22,4 +22,8 @@
   outline-color: #00695c;
 }
 
+.form-control input.invalid {
+  border-color: #d50000;
+  background-color: #ffcdd2;
+}
 
