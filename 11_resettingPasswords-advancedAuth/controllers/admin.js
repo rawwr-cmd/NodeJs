@@ -53,22 +53,29 @@ exports.postEditProduct = (req, res, next) => {
   Product.findById(productId)
     //destructuring the arrays
     .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect("/");
+      }
       product.title = title;
       product.price = price;
       product.description = description;
       product.imageUrl = imageUrl;
-      return product.save();
+      return (
+        product
+          .save()
+          //handle the success of product.save
+          .then((result) => {
+            console.log("UPDATED PRODUCT!");
+            res.redirect("/admin/products");
+          })
+      );
     })
-    //handle the success of product.save
-    .then((result) => {
-      console.log("UPDATED PRODUCT!");
-      res.redirect("/admin/products");
-    })
+
     .catch((err) => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find({ userId: req.user._id })
     //these two variables holding the two nested arrays
     //selecting only specific data
     // .select("title price -_id")
@@ -87,7 +94,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.findByIdAndRemove(productId)
+  Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => {
       console.log("SUCCESSFULLY DELETED!!");
       res.redirect("/admin/products");
