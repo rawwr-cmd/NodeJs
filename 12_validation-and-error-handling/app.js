@@ -12,7 +12,7 @@ const mongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 
-const { get404 } = require("./controllers/error");
+const { get404, get500 } = require("./controllers/error");
 const User = require("./models/user");
 
 const app = express();
@@ -58,10 +58,15 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       next();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw new Error(err);
+    });
 });
 
 //middleware
@@ -75,6 +80,7 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.get("/500", get500);
 app.use(get404);
 
 mongoose
