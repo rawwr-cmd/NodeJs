@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
@@ -5,12 +6,34 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
+    hasError: false,
+    errorMessage: null,
   });
 };
 
 exports.postAddProduct = (req, res, next) => {
   // console.log(req.body);
   const { title, imageUrl, price, description } = req.body;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/edit-product",
+      editing: false,
+      hasError: true,
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        price: price,
+        description: description,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
+
   const product = new Product({
     title,
     price,
@@ -35,6 +58,7 @@ exports.getEditProduct = (req, res, next) => {
   }
   //req params actually grabs the id from the url
   const { productId } = req.params;
+
   Product.findById(productId).then((product) => {
     if (!product) {
       return res.redirect("/");
@@ -44,14 +68,17 @@ exports.getEditProduct = (req, res, next) => {
       path: "/admin/edit-product",
       editing: editMode,
       product: product,
+      hasError: false,
+      errorMessage: null,
+      errorMessage: null,
     });
   });
 };
 
 exports.postEditProduct = (req, res, next) => {
+  //destructuring the arrays
   const { productId, title, imageUrl, price, description } = req.body;
   Product.findById(productId)
-    //destructuring the arrays
     .then((product) => {
       if (product.userId.toString() !== req.user._id.toString()) {
         return res.redirect("/");
