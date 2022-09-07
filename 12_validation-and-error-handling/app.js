@@ -83,6 +83,10 @@ app.use(authRoutes);
 app.get("/500", get500);
 app.use(get404);
 
+app.use((error, req, res, next) => {
+  res.redirect("/500");
+});
+
 mongoose
   .connect(process.env.DB_URL, {
     useNewUrlParser: true,
