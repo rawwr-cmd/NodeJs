@@ -24,6 +24,16 @@ const store = new mongoDbStore({
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
 app.set("view engine", "ejs");
 // app.set("view engine", "pug");
 app.set("views", "views");
@@ -48,7 +58,7 @@ const sessionConfig = {
 };
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: "images" }).single("image"));
+app.use(multer({ storage: fileStorage }).single("image"));
 
 app.use(express.static(path.join(__dirname, "public")));
 
