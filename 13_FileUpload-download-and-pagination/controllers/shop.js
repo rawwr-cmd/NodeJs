@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const PDFDocument = require("pdfkit");
+
 const Product = require("../models/product");
 const Order = require("../models/orders");
 
@@ -176,6 +178,22 @@ exports.getInvoice = (req, res, next) => {
 
       const invoiceName = "invoice-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
+
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"'
+      );
+
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.text("hello world!");
+
+      //finalizing the pdfDoc
+      pdfDoc.end();
+
       // reading the file all at once
       // fs.readFile(invoicePath, (err, data) => {
       //   if (err) {
@@ -193,14 +211,12 @@ exports.getInvoice = (req, res, next) => {
       // });
 
       //reading the file in chunks(line by line), buffer gives us access to the chunks
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        'inline; filename="' + invoiceName + '"'
-      );
-      //piping/forwarding the readable data to response which is a writable stream
-      file.pipe(res);
+      // const file = fs.createReadStream(invoicePath);
+
+      //headers---------------here
+
+      // //piping/forwarding the readable data to response which is a writable stream
+      // file.pipe(res);
     })
     .catch((err) => {
       return next(err);
