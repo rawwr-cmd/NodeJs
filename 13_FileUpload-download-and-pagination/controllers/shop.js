@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const Product = require("../models/product");
 const Order = require("../models/orders");
 
@@ -69,9 +72,10 @@ exports.getCart = (req, res, next) => {
     })
     .catch((err) => {
       // res.redirect("/500");
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      // const error = new Error(err);
+      // error.httpStatusCode = 500;
+      // return next(error);
+      console.log(err);
     });
 };
 
@@ -157,4 +161,25 @@ exports.getOrders = (req, res, next) => {
       error.httpStatusCode = 500;
       return next(error);
     });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const { orderId } = req.params;
+  const invoiceName = "invoice-" + orderId + ".pdf";
+  const invoicePath = path.join("data", "invoices", invoiceName);
+  fs.readFile(invoicePath, (err, data) => {
+    if (err) {
+      return next(err);
+    }
+    //setting file type headers
+    res.setHeader("Content-Type", "application/pdf");
+    //serving the file
+    res.setHeader(
+      "Content-Disposition",
+      //change inline to attachment if you just want to download the file and not open it
+      'inline; filename="' + invoiceName + '"'
+    );
+
+    res.send(data);
+  });
 };
