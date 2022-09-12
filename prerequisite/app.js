@@ -1,4 +1,11 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+// console.log(process.env.SECRET);
+// require("dotenv").config();
+
 const express = require("express");
+const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
 const feedRoutes = require("./routes/feed");
@@ -21,6 +28,11 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoutes);
 
-app.listen(8080, () => {
-  console.log("Server is running on port 8080");
-});
+mongoose
+  .connect(process.env.DB_URL, { useNewUrlParser: true })
+  .then((result) => {
+    app.listen(8080, () => {
+      console.log("Server is running on port 8080");
+    });
+  })
+  .catch((err) => console.log(err));
