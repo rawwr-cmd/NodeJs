@@ -96,9 +96,11 @@ exports.updatePost = (req, res, next) => {
 
   const { title, content } = req.body;
   let { imageUrl } = req.body;
+
   if (req.file) {
     imageUrl = req.file.path.replace("\\", "/");
   }
+
   if (!imageUrl) {
     const error = new Error("No file picked.");
     error.statusCode = 422;
@@ -126,7 +128,32 @@ exports.updatePost = (req, res, next) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
-      next(err);
+      next(err); //since async
+    });
+};
+
+exports.deletePost = (req, res, next) => {
+  const { postId } = req.params;
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        const error = new Error("Could not find post.");
+        error.statusCode = 404;
+        throw error;
+      }
+      // Check logged in user
+      clearImage(post.imageUrl);
+      return Post.findByIdAndRemove(postId);
+    })
+    .then((result) => {
+      console.log(result);
+      res.status(200).json({ message: "DELETED POST." });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err); //since async
     });
 };
 
