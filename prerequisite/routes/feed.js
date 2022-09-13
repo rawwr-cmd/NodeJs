@@ -1,7 +1,12 @@
 const express = require("express");
 const { body } = require("express-validator");
 
-const { getPosts, createPosts, getSinglePost } = require("../controllers/feed");
+const {
+  getPosts,
+  createPosts,
+  getSinglePost,
+  updatePost,
+} = require("../controllers/feed");
 
 const router = express.Router();
 
@@ -12,12 +17,21 @@ router.get("/posts", getPosts);
 router.post(
   "/post",
   [
-    body("title").trim().isLength({ min: 7 }),
+    body("title").trim().isLength({ min: 5 }),
     body("content").trim().isLength({ min: 5 }),
   ],
   createPosts
 );
 
 router.get("/post/:postId", getSinglePost);
+
+router.put(
+  "/post/:postId",
+  [
+    body("title").trim().isLength({ min: 5 }),
+    body("content").trim().isLength({ min: 5 }),
+  ],
+  updatePost
+);
 
 module.exports = router;
