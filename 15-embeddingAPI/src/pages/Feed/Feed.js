@@ -106,7 +106,14 @@ class Feed extends Component {
     this.setState({
       editLoading: true,
     });
+
     // Set up data (with image!)
+    const formData = new FormData();
+
+    formData.append("title", postData.title);
+    formData.append("image", postData.image);
+    formData.append("content", postData.content);
+
     let url = "http://localhost:8080/feed/post";
     let method = "POST";
     if (this.state.editPost) {
@@ -115,13 +122,8 @@ class Feed extends Component {
 
     fetch(url, {
       method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: postData.title,
-        content: postData.content,
-      }),
+      //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORM
+      body: formData,
     })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
