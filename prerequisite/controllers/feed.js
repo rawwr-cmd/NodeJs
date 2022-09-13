@@ -5,18 +5,30 @@ const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 
 exports.getPosts = (req, res, next) => {
+  const { page = 1 } = req.query;
+
+  const ITEMS_PER_PAGE = 2;
+  let totalItems;
   Post.find()
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return Post.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE); //amount of items we want to have on each page
+    })
     .then((posts) => {
       res.status(200).json({
         message: "Fetched posts successfully.",
         posts: posts,
+        totalItems: totalItems,
       });
     })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
-      next(err); //since async request
+      next(err); //since async
     });
 };
 
