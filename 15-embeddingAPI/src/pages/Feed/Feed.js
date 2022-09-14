@@ -8,7 +8,6 @@ import Paginator from "../../components/Paginator/Paginator";
 import Loader from "../../components/Loader/Loader";
 import ErrorHandler from "../../components/ErrorHandler/ErrorHandler";
 import "./Feed.css";
-
 class Feed extends Component {
   state = {
     isEditing: false,
