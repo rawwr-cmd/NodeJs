@@ -129,7 +129,7 @@ class Feed extends Component {
 
     fetch(url, {
       method: method,
-      //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORM
+      //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORMDATA
       body: formData,
     })
       .then((res) => {
