@@ -9,14 +9,17 @@ const {
   deletePost,
 } = require("../controllers/feed");
 
+const isAuth = require("../middleware/is-auth");
+
 const router = express.Router();
 
 // GET /feed/posts
-router.get("/posts", getPosts);
+router.get("/posts", isAuth, getPosts);
 
 // POST /feed/post
 router.post(
   "/post",
+  isAuth,
   [
     body("title").trim().isLength({ min: 5 }),
     body("content").trim().isLength({ min: 5 }),
@@ -24,10 +27,11 @@ router.post(
   createPosts
 );
 
-router.get("/post/:postId", getSinglePost);
+router.get("/post/:postId", isAuth, getSinglePost);
 
 router.put(
   "/post/:postId",
+  isAuth,
   [
     body("title").trim().isLength({ min: 5 }),
     body("content").trim().isLength({ min: 5 }),
@@ -35,6 +39,6 @@ router.put(
   updatePost
 );
 
-router.delete("/post/:postId", deletePost);
+router.delete("/post/:postId", isAuth, deletePost);
 
 module.exports = router;

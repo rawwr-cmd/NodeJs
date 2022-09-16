@@ -49,7 +49,9 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch(`http://localhost:8080/feed/posts?page=${page}`)
+    fetch(`http://localhost:8080/feed/posts?page=${page}`, {
+      headers: { Authorization: `bearer ${this.props.token}` },
+    })
       .then((res) => {
         if (res.status !== 200) {
           throw new Error("Failed to fetch posts.");
@@ -131,6 +133,7 @@ class Feed extends Component {
       method: method,
       //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORMDATA
       body: formData,
+      headers: { Authorization: `bearer ${this.props.token}` },
     })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
@@ -185,6 +188,7 @@ class Feed extends Component {
     this.setState({ postsLoading: true });
     fetch(`http://localhost:8080/feed/post/${postId}`, {
       method: "DELETE",
+      headers: { Authorization: `bearer ${this.props.token}` },
     })
       .then((res) => {
         if (res.status !== 200 && res.status !== 201) {
