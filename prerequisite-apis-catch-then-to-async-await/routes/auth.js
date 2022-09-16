@@ -1,7 +1,13 @@
 const express = require("express");
 const { body } = require("express-validator");
+const isAuth = require("../middleware/is-auth");
 
-const { signup, login } = require("../controllers/auth");
+const {
+  signup,
+  login,
+  getUserStatus,
+  updateUserStatus,
+} = require("../controllers/auth");
 
 const User = require("../models/user");
 
@@ -28,5 +34,14 @@ router.put(
 );
 
 router.post("/login", login);
+
+router.get("/status", isAuth, getUserStatus);
+
+router.patch(
+  "/status",
+  isAuth,
+  [body("status").trim().not().isEmpty()],
+  updateUserStatus
+);
 
 module.exports = router;

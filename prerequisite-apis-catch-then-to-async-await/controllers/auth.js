@@ -73,7 +73,6 @@ exports.login = async (req, res, next) => {
 };
 
 //STATUS UPDATES
-
 exports.getUserStatus = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
