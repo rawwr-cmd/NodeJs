@@ -8,7 +8,7 @@ import Auth from './Auth';
 class Signup extends Component {
   state = {
     signupForm: {
-      email: {
+      email: { 
         value: '',
         valid: false,
         touched: false,

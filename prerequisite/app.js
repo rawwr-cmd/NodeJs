@@ -51,7 +51,7 @@ app.use((req, res, next) => {
   );
   //allowing the content type
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
+  next(); 
 });
 
 app.use("/feed", feedRoutes);

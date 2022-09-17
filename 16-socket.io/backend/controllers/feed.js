@@ -71,7 +71,16 @@ exports.createPosts = async (req, res, next) => {
 
     //posts-channel or room
     //will be used by the front end
-    io.getIO().emit("posts", { action: "create", post: post });
+    io.getIO().emit("posts", {
+      action: "create",
+      post: {
+        ...post._doc,
+        creator: {
+          _id: req.userId,
+          name: user.name,
+        },
+      },
+    });
 
     res.status(201).json({
       message: "Post created successfully!",
