@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 
 const { validationResult } = require("express-validator");
+
+const io = require("../socket");
 const Post = require("../models/post");
 const User = require("../models/user");
 
@@ -31,6 +33,7 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
+//CREATE POSTS
 exports.createPosts = async (req, res, next) => {
   const errors = validationResult(req);
   // console.log(errors);  //array of errors
@@ -65,6 +68,10 @@ exports.createPosts = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.push(post);
     await user.save(); //saving the posts in the array of posts in the user profile
+
+    //posts-channel or room
+    //will be used by the front end
+    io.getIO().emit("posts", { action: "create", post: post });
 
     res.status(201).json({
       message: "Post created successfully!",
