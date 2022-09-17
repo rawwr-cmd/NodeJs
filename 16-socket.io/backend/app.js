@@ -70,8 +70,16 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.DB_URL, { useNewUrlParser: true })
   .then((result) => {
-    app.listen(8080, () => {
+    const server = app.listen(8080, () => {
       console.log("Server is running on port 8080");
+    });
+    const io = require("socket.io")(server, {
+      cors: {
+        origin: "*",
+      },
+    });
+    io.on("connection", (socket) => {
+      console.log("Client connected");
     });
   })
   .catch((err) => console.log(err));
