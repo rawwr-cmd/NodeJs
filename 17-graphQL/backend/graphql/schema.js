@@ -20,10 +20,14 @@ module.exports = buildSchema(`
       posts: [Post!]!
    }
 
-   Input UserInputData {
+   input UserInputData {
       email: String!
       name: String!
       password: String!
+   }
+
+   type rawwr {
+      message : String!
    }
 
   type RootMutation {
@@ -31,6 +35,7 @@ module.exports = buildSchema(`
   }
 
   schema {
-    query: RootQuery
+    mutation: RootMutation
+    query: rawwr
   }
 `);
