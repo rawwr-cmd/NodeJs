@@ -5,27 +5,27 @@ module.exports = (req, res, next) => {
   const authHeader = req.get("Authorization");
   //if there is no header
   if (!authHeader) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
+    req.isAuth = false; //set the isAuth to false
+    return next();
   }
 
   //split the authorization header into an array aka split the string at the space
   const token = authHeader.split(" ")[1];
   let decodedToken;
+
   try {
     decodedToken = jwt.verify(token, "rawwrisamaal");
   } catch (err) {
-    err.statusCode = 500;
-    throw err;
+    req.isAuth = false;
   }
+
   if (!decodedToken) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
+    req.isAuth = false;
+    return next();
   }
 
   //decording the userid from the token
   req.userId = decodedToken.userId;
+  req.isAuth = true;
   next();
 };
