@@ -135,26 +135,43 @@ class Feed extends Component {
     formData.append("image", postData.image);
     formData.append("content", postData.content);
 
-    let url = "http://localhost:8080/feed/post";
-    let method = "POST";
-    if (this.state.editPost) {
-      url = `http://localhost:8080/feed/post/${this.state.editPost._id}`;
-      method = "PUT";
-    }
+    let graphqlQuery = {
+      query: `
+      mutation {
+        createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "some url mate"}) {
+          _id
+          title
+        
+        }
+      }
+    `,
+    };
 
-    fetch(url, {
-      method: method,
+    //in (creator {name}) is getting drilled the exactly the name of the user who created the post
+
+    fetch("http://localhost:8080/graphql", {
+      method: "POST",
       //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORMDATA
-      body: formData,
-      headers: { Authorization: `bearer ${this.props.token}` },
+      body: JSON.stringify(graphqlQuery),
+      headers: {
+        Authorization: `bearer ${this.props.token}`,
+        "Content-Type": "application/json",
+      },
     })
       .then((res) => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Creating or editing a post failed!");
-        }
         return res.json();
       })
       .then((resData) => {
+        if (resData.errors && resData.errors[0].status === 422) {
+          throw new Error(
+            "Validation failed. Make sure the email addresss is not used before."
+          );
+        }
+
+        if (resData.errors) {
+          throw new Error("User creation failed!");
+        }
+
         console.log(resData);
 
         const post = {
