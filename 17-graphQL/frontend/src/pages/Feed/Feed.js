@@ -169,7 +169,7 @@ class Feed extends Component {
     })
       .then((res) => res.json())
       .then((fileResData) => {
-        const imageUrl = fileResData.filePath;
+        const imageUrl = fileResData.filePath || "undefined";
         let graphqlQuery = {
           query: `
           mutation {
@@ -186,6 +186,25 @@ class Feed extends Component {
           }
         `,
         };
+
+        if (this.state.editPost) {
+          graphqlQuery = {
+            query: `
+            mutation {
+              updatePost(id: "${this.state.editPost._id}", postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
+                _id
+                title
+                content
+                imageUrl
+                creator {
+                  name
+                }
+                createdAt
+              }
+            }
+          `,
+          };
+        }
 
         //in (creator {name}) is getting drilled the exactly the name of the user who created the post
 
@@ -211,18 +230,24 @@ class Feed extends Component {
         }
 
         if (resData.errors) {
-          throw new Error("User creation failed!");
+          throw new Error("Post Creation failed!");
         }
 
         console.log(resData);
 
+        let resDataField = "createPost";
+
+        if (this.state.editPost) {
+          resDataField = "updatePost";
+        }
+
         const post = {
-          _id: resData.data.createPost._id,
-          title: resData.data.createPost.title,
-          content: resData.data.createPost.content,
-          creator: resData.data.createPost.creator,
-          createdAt: resData.data.createPost.createdAt,
-          imagePath: resData.data.createPost.imageUrl,
+          _id: resData.data[resDataField]._id,
+          title: resData.data[resDataField].title,
+          content: resData.data[resDataField].content,
+          creator: resData.data[resDataField].creator,
+          createdAt: resData.data[resDataField].createdAt,
+          imagePath: resData.data[resDataField].imageUrl,
         };
 
         this.setState((prevState) => {
@@ -262,17 +287,31 @@ class Feed extends Component {
 
   deletePostHandler = (postId) => {
     this.setState({ postsLoading: true });
-    fetch(`http://localhost:8080/feed/post/${postId}`, {
-      method: "DELETE",
-      headers: { Authorization: `bearer ${this.props.token}` },
+
+    const graphqlQuery = {
+      query: `
+        mutation {
+          deletePost(id: "${postId}")
+        }
+      `,
+    };
+
+    fetch(`http://localhost:8080/graphql`, {
+      method: "POST",
+      headers: {
+        Authorization: `bearer ${this.props.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(graphqlQuery),
     })
       .then((res) => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Deleting a post failed!");
-        }
         return res.json();
       })
       .then((resData) => {
+        if (resData.errors) {
+          throw new Error("Deleting a post failed!");
+        }
+
         console.log(resData);
         this.loadPosts();
 

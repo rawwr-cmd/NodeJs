@@ -3,8 +3,10 @@ if (process.env.NODE_ENV !== "production") {
 }
 // console.log(process.env.SECRET);
 // require("dotenv").config();
-const { v4: uuidv4 } = require("uuid");
+const { clearImage } = require("./util/file");
 const path = require("path");
+
+const { v4: uuidv4 } = require("uuid");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -41,6 +43,7 @@ const fileFilter = (req, file, cb) => {
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
+
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
@@ -63,6 +66,22 @@ app.use((req, res, next) => {
 });
 
 app.use(auth);
+
+app.put("/post-image", (req, res, next) => {
+  if (!req.isAuth) {
+    throw new Error("Not authenticated!");
+  }
+  if (!req.file) {
+    return res.status(200).json({ message: "No file provided!" });
+  }
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+  return res.status(201).json({
+    message: "File stored.",
+    filePath: req.file.path.replace("\\", "/"),
+  });
+});
 
 //graphql
 
