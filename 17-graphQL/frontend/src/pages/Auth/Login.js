@@ -12,7 +12,7 @@ class Login extends Component {
         value: '',
         valid: false,
         touched: false,
-        validators: [required, email]
+        validators: [required, email] 
       },
       password: {
         value: '',
