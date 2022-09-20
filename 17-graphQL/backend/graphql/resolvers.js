@@ -122,19 +122,28 @@ module.exports = {
   },
 
   //getting posts
-  posts: async (args, req) => {
+  posts: async ({ page }, req) => {
     if (!req.isAuth) {
       const error = new Error("Not authenticated!");
       error.code = 401;
       throw error;
     }
 
+    if (!page) {
+      page = 1;
+    }
+
+    const perPage = 2;
     const totalPosts = await Post.find().countDocuments();
 
-    const posts = await Post.find().sort({ createdAt: -1 }).populate("creator");
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage) // limit per page
+      .populate("creator");
 
     return {
-      //for graph ql, we have to map and chanmge the datatypes
+      //for graph ql, we have to map and change the dataformat
       posts: posts.map((p) => {
         return {
           ...p._doc,

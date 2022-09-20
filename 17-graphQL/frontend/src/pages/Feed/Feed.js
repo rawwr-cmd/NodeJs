@@ -54,22 +54,23 @@ class Feed extends Component {
       this.setState({ postPage: page });
     }
 
-    let graphqlQuery = {
+    const graphqlQuery = {
       query: `
-      {
-        posts {
-          posts {
-            _id
-            title
-            content
-            creator {
-              name
+        {
+          posts(page: ${page}) {
+            posts {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
             }
-            createdAt
+            totalPosts
           }
-          totalPosts
         }
-      }
       `,
     };
 
@@ -155,39 +156,50 @@ class Feed extends Component {
 
     // Set up data (with image!)
     const formData = new FormData();
-
-    formData.append("title", postData.title);
     formData.append("image", postData.image);
-    formData.append("content", postData.content);
 
-    let graphqlQuery = {
-      query: `
-      mutation {
-        createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "some url mate"}) {
-          _id
-          title
-          content
-          imageUrl
-          creator {
-            name
-          }
-          createdAt
-        }
-      }
-    `,
-    };
+    if (this.state.editPost) {
+      formData.append("oldPath", this.state.editPost.imagePath);
+    }
 
-    //in (creator {name}) is getting drilled the exactly the name of the user who created the post
-
-    fetch("http://localhost:8080/graphql", {
-      method: "POST",
-      //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORMDATA
-      body: JSON.stringify(graphqlQuery),
-      headers: {
-        Authorization: `bearer ${this.props.token}`,
-        "Content-Type": "application/json",
-      },
+    fetch("http://localhost:8080/post-image", {
+      method: "PUT",
+      headers: { Authorization: `bearer ${this.props.token}` },
+      body: formData,
     })
+      .then((res) => res.json())
+      .then((fileResData) => {
+        const imageUrl = fileResData.filePath;
+        let graphqlQuery = {
+          query: `
+          mutation {
+            createPost(postInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
+            }
+          }
+        `,
+        };
+
+        //in (creator {name}) is getting drilled the exactly the name of the user who created the post
+
+        return fetch("http://localhost:8080/graphql", {
+          method: "POST",
+          //SINCE FORM DATA IS TEXT AS WELL AS IMAGES WE CAN'T USE JSON IN HEADERS AND IT IS AUTOMATICALLY DONE BY FORMDATA
+          body: JSON.stringify(graphqlQuery),
+          headers: {
+            Authorization: `bearer ${this.props.token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      })
+      //result of the fetch request
       .then((res) => {
         return res.json();
       })
@@ -210,6 +222,7 @@ class Feed extends Component {
           content: resData.data.createPost.content,
           creator: resData.data.createPost.creator,
           createdAt: resData.data.createPost.createdAt,
+          imagePath: resData.data.createPost.imageUrl,
         };
 
         this.setState((prevState) => {
