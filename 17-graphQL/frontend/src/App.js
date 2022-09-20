@@ -123,6 +123,7 @@ class App extends Component {
         {
           _id,
           email
+          
         }
       }
       `,
