@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const path = require("path");
+const fs = require("fs");
 
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -12,6 +13,9 @@ const mongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
 
 const { get404, get500 } = require("./controllers/error");
 const User = require("./models/user");
@@ -54,6 +58,16 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+
+//a for append
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
+app.use(helmet());
+app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 const sessionConfig = {
   store: store,
@@ -128,7 +142,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((result) => {
-    app.listen(3000, () => {
+    app.listen(process.env.PORT || 3000, () => {
       console.log("The application is running on localhost 3000");
     });
   })
