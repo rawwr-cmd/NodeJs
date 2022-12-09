@@ -2,4 +2,4 @@
 
 ## Payments embedded stripe -- 14
 ## NOTE THAT MOBILE RESPONSIVENESS IS NOT ADDED, PLEASE CHANGE YOUR SCREEN INTO DESKTOP MODE FROM THE CHROME PANEL 
-[click1](https://cool-pp.herokuapp.com/)<br>
+
